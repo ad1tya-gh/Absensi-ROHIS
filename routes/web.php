@@ -70,6 +70,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // Delete Absensi Record
     Route::delete('/absensi/{id}', [KegiatanController::class, 'destroyAbsensi'])->name('absensi.destroy');
+    
+    // CRUD Jabatan
+    Route::get('/jabatan', [\App\Http\Controllers\Admin\JabatanController::class, 'index'])->name('jabatan.index');
+    Route::post('/jabatan', [\App\Http\Controllers\Admin\JabatanController::class, 'store'])->name('jabatan.store');
+    Route::delete('/jabatan/{id}', [\App\Http\Controllers\Admin\JabatanController::class, 'destroy'])->name('jabatan.destroy');
 });
 
 require __DIR__.'/auth.php';

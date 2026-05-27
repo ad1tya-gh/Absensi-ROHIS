@@ -34,11 +34,11 @@ export default function Login({ status }) {
             <div className="w-full max-w-md bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden shadow-2xl p-6 md:p-8 flex flex-col items-center">
                 {/* Logo & Brand Header */}
                 <div className="flex flex-col items-center text-center mb-8">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-primary to-emerald-400 flex items-center justify-center font-bold text-white text-3xl shadow-lg shadow-primary/30 mb-4 animate-pulse">
-                        R
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center mb-4">
+                        <img src="/images/logo-rohis.png" alt="Logo ROHIS" className="w-full h-full object-contain" />
                     </div>
                     <h2 className="text-2xl font-bold text-white tracking-wide">ABSENSI ROHIS 7</h2>
-                    <p className="text-sm text-gray-400 mt-1">SMA Negeri 7</p>
+                    <p className="text-sm text-gray-400 mt-1">SMK TI Bali Global Badung</p>
                 </div>
 
                 {status && (
@@ -58,7 +58,7 @@ export default function Login({ status }) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                                 </svg>
                             </span>
-                            
+
                             <input
                                 id="email"
                                 type="email"
@@ -85,7 +85,7 @@ export default function Login({ status }) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
                             </span>
-                            
+
                             <input
                                 id="password"
                                 type="password"
@@ -105,9 +105,9 @@ export default function Login({ status }) {
                     {/* Remember Me */}
                     <div className="flex items-center justify-between">
                         <label className="flex items-center cursor-pointer select-none">
-                            <Checkbox 
-                                name="remember" 
-                                checked={data.remember} 
+                            <Checkbox
+                                name="remember"
+                                checked={data.remember}
                                 onChange={handleOnChange}
                                 className="rounded bg-white/5 border-white/10 text-primary focus:ring-primary cursor-pointer w-4.5 h-4.5"
                             />

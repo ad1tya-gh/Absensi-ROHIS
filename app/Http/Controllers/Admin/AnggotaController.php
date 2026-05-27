@@ -30,10 +30,12 @@ class AnggotaController extends Controller
         }
 
         $anggota = $query->orderBy('nama', 'asc')->paginate(10)->withQueryString();
+        $jabatanList = \App\Models\Jabatan::orderBy('nama_jabatan', 'asc')->get();
 
         return Inertia::render('Admin/Anggota/Index', [
             'anggota' => $anggota,
             'filters' => $request->only(['search']),
+            'jabatanList' => $jabatanList,
         ]);
     }
 
@@ -48,7 +50,6 @@ class AnggotaController extends Controller
             'kelas' => 'required|string|max:20',
             'jabatan' => 'required|string|max:50',
             'angkatan' => 'required|integer|between:2000,2100',
-            'tanda_tangan' => 'nullable|string',
         ]);
 
         DB::transaction(function () use ($validated) {
@@ -84,7 +85,7 @@ class AnggotaController extends Controller
                 'nama' => $validated['nama'],
                 'kelas' => $validated['kelas'],
                 'jabatan' => $validated['jabatan'],
-                'tanda_tangan' => $validated['tanda_tangan'] ?? null,
+                'tanda_tangan' => null,
                 'user_id' => $user->id,
             ]);
         });
@@ -104,7 +105,6 @@ class AnggotaController extends Controller
             'nama' => 'required|string|max:100',
             'kelas' => 'required|string|max:20',
             'jabatan' => 'required|string|max:50',
-            'tanda_tangan' => 'nullable|string',
         ]);
 
         DB::transaction(function () use ($anggota, $validated) {
@@ -113,7 +113,6 @@ class AnggotaController extends Controller
                 'nama' => $validated['nama'],
                 'kelas' => $validated['kelas'],
                 'jabatan' => $validated['jabatan'],
-                'tanda_tangan' => $validated['tanda_tangan'] ?? $anggota->tanda_tangan,
             ]);
 
             if ($anggota->user) {

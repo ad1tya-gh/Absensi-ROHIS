@@ -73,23 +73,23 @@ class AbsenController extends Controller
 
         $user = Auth::user();
         if ($user->role === 'admin') {
-            return response()->json(['message' => 'Admin tidak dapat melakukan absensi.'], 403);
+            return response()->json(['valid' => false, 'message' => 'Admin tidak dapat melakukan absensi.'], 200);
         }
 
         $anggota = Anggota::where('user_id', $user->id)->first();
         if (!$anggota) {
-            return response()->json(['message' => 'Data anggota Anda tidak ditemukan.'], 403);
+            return response()->json(['valid' => false, 'message' => 'Data anggota Anda tidak ditemukan.'], 200);
         }
 
         $kode = strtoupper(trim($request->input('kode_absen')));
         $kegiatan = Kegiatan::where('kode_absen', $kode)->first();
 
         if (!$kegiatan) {
-            return response()->json(['message' => 'Kode absensi tidak valid atau tidak ditemukan.'], 404);
+            return response()->json(['valid' => false, 'message' => 'Kode absensi tidak valid atau tidak ditemukan.'], 200);
         }
 
         if (!$kegiatan->is_active) {
-            return response()->json(['message' => 'Kegiatan ini sudah tidak aktif / selesai.'], 400);
+            return response()->json(['valid' => false, 'message' => 'Kegiatan ini sudah tidak aktif / selesai.'], 200);
         }
 
         // Check duplicate attendance
@@ -98,7 +98,7 @@ class AbsenController extends Controller
             ->exists();
 
         if ($sudahAbsen) {
-            return response()->json(['message' => 'Anda sudah melakukan absensi untuk kegiatan ini.'], 400);
+            return response()->json(['valid' => false, 'message' => 'Anda sudah melakukan absensi untuk kegiatan ini.'], 200);
         }
 
         return response()->json([

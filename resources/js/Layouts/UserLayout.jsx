@@ -1,8 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
+import { useToast } from '@/Components/Toast';
 
 export default function UserLayout({ children, title }) {
-    const { auth } = usePage().props;
+    const { auth, flash, errors } = usePage().props;
+    const { toast, showToast } = useToast();
+
+    useEffect(() => {
+        if (flash?.message) {
+            showToast(flash.message, 'success');
+        }
+        if (flash?.error) {
+            showToast(flash.error, 'error');
+        }
+    }, [flash]);
+
+    useEffect(() => {
+        if (errors?.error) {
+            showToast(errors.error, 'error');
+        }
+    }, [errors]);
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -11,11 +28,12 @@ export default function UserLayout({ children, title }) {
 
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col">
+            {toast}
             {/* User Header */}
             <header className="bg-secondary text-white shadow-lg sticky top-0 z-40">
                 <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                        <span className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-bold text-white shadow-md shadow-primary/20">R</span>
+                        <img src="/images/logo-rohis.png" alt="Logo ROHIS" className="w-8 h-8 object-contain rounded-lg" />
                         <Link href={route('dashboard')} className="font-bold text-base tracking-wider hover:text-primary transition-colors">
                             ROHIS 7
                         </Link>

@@ -5,21 +5,21 @@ import Modal from '@/Components/Modal';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
-import SignatureCanvas from '@/Components/SignatureCanvas';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 
-export default function Index({ anggota, filters }) {
+export default function Index({ anggota, filters, jabatanList }) {
     const [search, setSearch] = useState(filters.search || '');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedAnggota, setSelectedAnggota] = useState(null);
+    const [confirmState, setConfirmState] = useState({ show: false, item: null });
 
     const { data, setData, post, put, delete: destroy, processing, errors, reset, clearErrors } = useForm({
         nisn: '',
         nama: '',
         kelas: '',
         jabatan: '',
-        angkatan: new Date().getFullYear(),
-        tanda_tangan: null
+        angkatan: new Date().getFullYear()
     });
 
     const handleSearchSubmit = (e) => {
@@ -49,8 +49,7 @@ export default function Index({ anggota, filters }) {
             nisn: item.nisn,
             nama: item.nama,
             kelas: item.kelas,
-            jabatan: item.jabatan,
-            tanda_tangan: item.tanda_tangan
+            jabatan: item.jabatan
         });
         setIsEditModalOpen(true);
     };
@@ -81,9 +80,13 @@ export default function Index({ anggota, filters }) {
     };
 
     const handleDelete = (item) => {
-        if (confirm(`Apakah Anda yakin ingin menghapus data anggota ${item.nama}? Tindakan ini juga akan menghapus akun login yang terhubung.`)) {
-            destroy(route('admin.anggota.destroy', item.nisn));
-        }
+        setConfirmState({ show: true, item });
+    };
+
+    const confirmDelete = () => {
+        destroy(route('admin.anggota.destroy', confirmState.item.nisn), {
+            onFinish: () => setConfirmState({ show: false, item: null })
+        });
     };
 
     return (
@@ -127,15 +130,15 @@ export default function Index({ anggota, filters }) {
                     </button>
                 </form>
 
-                {/* Add Member Button */}
+                {/* Add Member Button — Smaller to match search button */}
                 <button
                     onClick={openCreateModal}
-                    className="py-2.5 px-5 bg-primary hover:bg-opacity-90 text-white rounded-xl text-sm font-semibold transition-all shadow-md shadow-primary/10 flex items-center justify-center space-x-2"
+                    className="py-2.5 px-4 bg-primary hover:bg-opacity-90 text-white rounded-xl text-sm font-semibold transition-all flex items-center justify-center space-x-2"
                 >
-                    <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                     </svg>
-                    <span>Tambah Anggota Baru</span>
+                    <span>Tambah Anggota</span>
                 </button>
             </div>
 
@@ -150,7 +153,6 @@ export default function Index({ anggota, filters }) {
                                 <th className="py-4 px-6">Nama Lengkap</th>
                                 <th className="py-4 px-6">Kelas</th>
                                 <th className="py-4 px-6">Jabatan</th>
-                                <th className="py-4 px-6 text-center">Tanda Tangan</th>
                                 <th className="py-4 px-6 text-right">Aksi</th>
                             </tr>
                         </thead>
@@ -176,28 +178,9 @@ export default function Index({ anggota, filters }) {
                                             {item.kelas}
                                         </td>
                                         <td className="py-4 px-6">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                                                item.jabatan.toLowerCase() === 'ketua'
-                                                    ? 'bg-amber-50 text-amber-600 border border-amber-200/50'
-                                                    : item.jabatan.toLowerCase() === 'sekretaris' || item.jabatan.toLowerCase() === 'bendahara'
-                                                    ? 'bg-blue-50 text-blue-600 border border-blue-200/50'
-                                                    : 'bg-slate-50 text-slate-500 border border-slate-200/50'
-                                            }`}>
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-50 text-slate-500 border border-slate-200/50">
                                                 {item.jabatan}
                                             </span>
-                                        </td>
-                                        <td className="py-4 px-6 text-center">
-                                            {item.tanda_tangan ? (
-                                                <div className="inline-block p-1 bg-white border border-slate-200 rounded-lg shadow-sm">
-                                                    <img 
-                                                        src={item.tanda_tangan} 
-                                                        alt="Ttd" 
-                                                        className="h-8 max-w-[80px] object-contain"
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <span className="text-xs text-slate-400 italic">Belum Ada</span>
-                                            )}
                                         </td>
                                         <td className="py-4 px-6 text-right space-x-2 whitespace-nowrap">
                                             <button
@@ -217,7 +200,7 @@ export default function Index({ anggota, filters }) {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="7" className="py-10 text-center text-slate-400 text-sm">
+                                    <td colSpan="6" className="py-10 text-center text-slate-400 text-sm">
                                         Data anggota tidak ditemukan.
                                     </td>
                                 </tr>
@@ -324,11 +307,9 @@ export default function Index({ anggota, filters }) {
                                     required
                                 >
                                     <option value="">Pilih Jabatan</option>
-                                    <option value="Ketua">Ketua</option>
-                                    <option value="Wakil Ketua">Wakil Ketua</option>
-                                    <option value="Sekretaris">Sekretaris</option>
-                                    <option value="Bendahara">Bendahara</option>
-                                    <option value="Anggota">Anggota</option>
+                                    {jabatanList && jabatanList.map((j) => (
+                                        <option key={j.id} value={j.nama_jabatan}>{j.nama_jabatan}</option>
+                                    ))}
                                 </select>
                                 <InputError message={errors.jabatan} className="mt-1 text-xs" />
                             </div>
@@ -345,14 +326,6 @@ export default function Index({ anggota, filters }) {
                                 <InputError message={errors.angkatan} className="mt-1 text-xs" />
                             </div>
                         </div>
-
-                        <div>
-                            <SignatureCanvas 
-                                label="Tanda Tangan Profil Default (Opsional)" 
-                                onChange={(val) => setData('tanda_tangan', val)} 
-                            />
-                            <InputError message={errors.tanda_tangan} className="mt-1 text-xs" />
-                        </div>
                     </div>
 
                     <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-end space-x-3">
@@ -366,7 +339,7 @@ export default function Index({ anggota, filters }) {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="py-2.5 px-5 bg-primary hover:bg-opacity-90 text-white rounded-xl text-sm font-semibold transition-all shadow-md shadow-primary/10 disabled:opacity-50"
+                            className="py-2.5 px-4 bg-primary hover:bg-opacity-90 text-white rounded-xl text-sm font-semibold transition-all shadow-md shadow-primary/10 disabled:opacity-50"
                         >
                             Simpan Data
                         </button>
@@ -438,30 +411,12 @@ export default function Index({ anggota, filters }) {
                                     required
                                 >
                                     <option value="">Pilih Jabatan</option>
-                                    <option value="Ketua">Ketua</option>
-                                    <option value="Wakil Ketua">Wakil Ketua</option>
-                                    <option value="Sekretaris">Sekretaris</option>
-                                    <option value="Bendahara">Bendahara</option>
-                                    <option value="Anggota">Anggota</option>
+                                    {jabatanList && jabatanList.map((j) => (
+                                        <option key={j.id} value={j.nama_jabatan}>{j.nama_jabatan}</option>
+                                    ))}
                                 </select>
                                 <InputError message={errors.jabatan} className="mt-1 text-xs" />
                             </div>
-                        </div>
-
-                        <div>
-                            {data.tanda_tangan && (
-                                <div className="mb-4">
-                                    <span className="block text-xs font-semibold text-gray-500 mb-1.5">Tanda Tangan Saat Ini:</span>
-                                    <div className="inline-block p-2 bg-slate-50 border border-slate-200 rounded-xl shadow-sm">
-                                        <img src={data.tanda_tangan} alt="Ttd Saat Ini" className="h-16 max-w-[120px] object-contain" />
-                                    </div>
-                                </div>
-                            )}
-                            <SignatureCanvas 
-                                label="Gambar Ulang Tanda Tangan (Mengganti yang Lama)" 
-                                onChange={(val) => setData('tanda_tangan', val)} 
-                            />
-                            <InputError message={errors.tanda_tangan} className="mt-1 text-xs" />
                         </div>
                     </div>
 
@@ -476,13 +431,21 @@ export default function Index({ anggota, filters }) {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="py-2.5 px-5 bg-primary hover:bg-opacity-90 text-white rounded-xl text-sm font-semibold transition-all shadow-md shadow-primary/10 disabled:opacity-50"
+                            className="py-2.5 px-4 bg-primary hover:bg-opacity-90 text-white rounded-xl text-sm font-semibold transition-all shadow-md shadow-primary/10 disabled:opacity-50"
                         >
                             Simpan Perubahan
                         </button>
                     </div>
                 </form>
             </Modal>
+
+            <ConfirmDialog
+                show={confirmState.show}
+                title="Hapus Anggota"
+                message={`Apakah Anda yakin ingin menghapus data anggota ${confirmState.item?.nama}? Tindakan ini juga akan menghapus akun login yang terhubung.`}
+                onConfirm={confirmDelete}
+                onCancel={() => setConfirmState({ show: false, item: null })}
+            />
         </AdminLayout>
     );
 }

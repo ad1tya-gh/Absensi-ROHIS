@@ -1,11 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import SignaturePad from 'react-signature-canvas';
 
 export default function SignatureCanvas({ label, onChange, value }) {
     const padRef = useRef(null);
 
-    // If there is an existing value (e.g. from database or saved profile),
-    // we can show a preview, but canvas is for drawing.
     const handleClear = () => {
         padRef.current.clear();
         onChange(null);
@@ -19,21 +17,6 @@ export default function SignatureCanvas({ label, onChange, value }) {
             onChange(dataUrl);
         }
     };
-
-    // Auto-resize handler for responsiveness
-    useEffect(() => {
-        const resizeCanvas = () => {
-            if (padRef.current) {
-                const canvas = padRef.current.getCanvas();
-                const ratio = Math.max(window.devicePixelRatio || 1, 1);
-                // We don't want to clear the canvas on window resize unless necessary,
-                // but setting width/height helps make the signature pad scale.
-            }
-        };
-
-        window.addEventListener('resize', resizeCanvas);
-        return () => window.removeEventListener('resize', resizeCanvas);
-    }, []);
 
     return (
         <div className="w-full">

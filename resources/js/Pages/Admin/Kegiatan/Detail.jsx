@@ -2,14 +2,20 @@ import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Modal from '@/Components/Modal';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 
 export default function Detail({ kegiatan, absensi, qrCodeSvg }) {
     const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+    const [confirmState, setConfirmState] = useState({ show: false, item: null });
 
     const handleDeleteAbsensi = (item) => {
-        if (confirm(`Apakah Anda yakin ingin menghapus catatan kehadiran untuk ${item.anggota?.nama}?`)) {
-            router.delete(route('admin.absensi.destroy', item.id));
-        }
+        setConfirmState({ show: true, item });
+    };
+
+    const confirmDelete = () => {
+        router.delete(route('admin.absensi.destroy', confirmState.item.id), {
+            onFinish: () => setConfirmState({ show: false, item: null })
+        });
     };
 
     const formatDate = (dateStr) => {
@@ -39,12 +45,12 @@ export default function Detail({ kegiatan, absensi, qrCodeSvg }) {
 
                 <a
                     href={route('admin.kegiatan.export-pdf', kegiatan.id)}
-                    className="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-all shadow-md shadow-emerald-600/10 flex items-center justify-center space-x-2"
+                    className="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-all flex items-center justify-center space-x-2"
                 >
-                    <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
-                    <span>Ekspor Daftar Hadir (PDF)</span>
+                    <span>Unduh PDF</span>
                 </a>
             </div>
 
@@ -219,6 +225,14 @@ export default function Detail({ kegiatan, absensi, qrCodeSvg }) {
                     </button>
                 </div>
             </Modal>
+
+            <ConfirmDialog
+                show={confirmState.show}
+                title="Batalkan Kehadiran"
+                message={`Apakah Anda yakin ingin menghapus catatan kehadiran untuk ${confirmState.item?.anggota?.nama}?`}
+                onConfirm={confirmDelete}
+                onCancel={() => setConfirmState({ show: false, item: null })}
+            />
         </AdminLayout>
     );
 }

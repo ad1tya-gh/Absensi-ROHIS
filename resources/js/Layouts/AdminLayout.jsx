@@ -1,9 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
+import { useToast } from '@/Components/Toast';
 
 export default function AdminLayout({ children, title }) {
-    const { auth } = usePage().props;
+    const { auth, flash, errors } = usePage().props;
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const { toast, showToast } = useToast();
+
+    useEffect(() => {
+        if (flash?.message) {
+            showToast(flash.message, 'success');
+        }
+        if (flash?.error) {
+            showToast(flash.error, 'error');
+        }
+    }, [flash]);
+
+    useEffect(() => {
+        if (errors?.error) {
+            showToast(errors.error, 'error');
+        }
+    }, [errors]);
 
     const navItems = [
         {
@@ -36,6 +53,16 @@ export default function AdminLayout({ children, title }) {
                 </svg>
             ),
         },
+        {
+            name: 'Manajemen Jabatan',
+            route: 'admin.jabatan.index',
+            href: route('admin.jabatan.index'),
+            icon: (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+            ),
+        },
     ];
 
     const handleLogout = (e) => {
@@ -50,12 +77,13 @@ export default function AdminLayout({ children, title }) {
 
     return (
         <div className="min-h-screen bg-slate-50 flex">
+            {toast}
             {/* Desktop Sidebar */}
             <aside className="hidden md:flex flex-col w-64 bg-secondary text-white shadow-xl flex-shrink-0">
                 {/* Logo Area */}
                 <div className="h-16 flex items-center px-6 bg-slate-950/20 border-b border-white/5">
                     <div className="flex items-center space-x-2">
-                        <span className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-bold text-white shadow-md shadow-primary/20">R</span>
+                        <img src="/images/logo-rohis.png" alt="Logo ROHIS" className="w-8 h-8 object-contain rounded-lg" />
                         <span className="font-bold text-lg tracking-wider bg-gradient-to-r from-white via-white to-primary/80 bg-clip-text text-transparent">ROHIS 7 Admin</span>
                     </div>
                 </div>
@@ -68,11 +96,10 @@ export default function AdminLayout({ children, title }) {
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                                    active
+                                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${active
                                         ? 'bg-primary text-white font-semibold shadow-lg shadow-primary/20'
                                         : 'text-gray-300 hover:bg-white/5 hover:text-white'
-                                }`}
+                                    }`}
                             >
                                 {item.icon}
                                 <span>{item.name}</span>
@@ -111,7 +138,7 @@ export default function AdminLayout({ children, title }) {
                     <div className="relative flex flex-col w-full max-w-xs bg-secondary text-white shadow-2xl animate-slide-in">
                         <div className="h-16 flex items-center justify-between px-6 bg-slate-950/20 border-b border-white/5">
                             <div className="flex items-center space-x-2">
-                                <span className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-bold text-white">R</span>
+                                <img src="/images/logo-rohis.png" alt="Logo ROHIS" className="w-8 h-8 object-contain rounded-lg" />
                                 <span className="font-bold text-lg">ROHIS 7 Admin</span>
                             </div>
                             <button onClick={() => setSidebarOpen(false)} className="text-gray-400 hover:text-white">
@@ -128,9 +155,8 @@ export default function AdminLayout({ children, title }) {
                                         key={item.name}
                                         href={item.href}
                                         onClick={() => setSidebarOpen(false)}
-                                        className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                                            active ? 'bg-primary text-white font-semibold shadow-lg' : 'text-gray-300 hover:bg-white/5'
-                                        }`}
+                                        className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${active ? 'bg-primary text-white font-semibold shadow-lg' : 'text-gray-300 hover:bg-white/5'
+                                            }`}
                                     >
                                         {item.icon}
                                         <span>{item.name}</span>
@@ -177,11 +203,11 @@ export default function AdminLayout({ children, title }) {
                         </button>
                         <h1 className="text-lg font-bold text-slate-800 ml-2 md:ml-0">{title}</h1>
                     </div>
-                    
+
                     {/* Organization Banner */}
                     <div className="flex items-center space-x-3">
                         <span className="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
-                            ROHIS SMA Negeri 7
+                            ROHIS SMK TI Bali Global Badung
                         </span>
                     </div>
                 </header>

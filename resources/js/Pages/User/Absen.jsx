@@ -11,13 +11,13 @@ export default function Absen({ anggota }) {
     const [kodeAbsen, setKodeAbsen] = useState('');
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
-    
+
     // Validated activity info
     const [kegiatan, setKegiatan] = useState(null);
-    
+
     // Signature state
     const [signature, setSignature] = useState(null);
-    
+
     // Success info
     const [successData, setSuccessData] = useState(null);
 
@@ -96,27 +96,24 @@ export default function Absen({ anggota }) {
                 {/* Step Indicator */}
                 <div className="flex items-center justify-between mb-8 px-4">
                     <div className="flex flex-col items-center">
-                        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                            step >= 1 ? 'bg-primary text-white ring-4 ring-primary/10' : 'bg-slate-200 text-slate-500'
-                        }`}>
+                        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${step >= 1 ? 'bg-primary text-white ring-4 ring-primary/10' : 'bg-slate-200 text-slate-500'
+                            }`}>
                             1
                         </span>
                         <span className="text-[10px] font-semibold text-slate-500 mt-1">Token Absen</span>
                     </div>
                     <div className={`flex-1 h-0.5 mx-2 transition-all ${step >= 2 ? 'bg-primary' : 'bg-slate-200'}`}></div>
                     <div className="flex flex-col items-center">
-                        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                            step >= 2 ? 'bg-primary text-white ring-4 ring-primary/10' : 'bg-slate-200 text-slate-500'
-                        }`}>
+                        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${step >= 2 ? 'bg-primary text-white ring-4 ring-primary/10' : 'bg-slate-200 text-slate-500'
+                            }`}>
                             2
                         </span>
                         <span className="text-[10px] font-semibold text-slate-500 mt-1">Tanda Tangan</span>
                     </div>
                     <div className={`flex-1 h-0.5 mx-2 transition-all ${step >= 3 ? 'bg-primary' : 'bg-slate-200'}`}></div>
                     <div className="flex flex-col items-center">
-                        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                            step >= 3 ? 'bg-primary text-white ring-4 ring-primary/10' : 'bg-slate-200 text-slate-500'
-                        }`}>
+                        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${step >= 3 ? 'bg-primary text-white ring-4 ring-primary/10' : 'bg-slate-200 text-slate-500'
+                            }`}>
                             3
                         </span>
                         <span className="text-[10px] font-semibold text-slate-500 mt-1">Selesai</span>
@@ -142,18 +139,16 @@ export default function Absen({ anggota }) {
                             <button
                                 type="button"
                                 onClick={() => { setActiveTab('manual'); setErrorMsg(''); }}
-                                className={`py-2 px-3 text-xs font-bold rounded-xl transition-all ${
-                                    activeTab === 'manual' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'
-                                }`}
+                                className={`py-2 px-3 text-xs font-bold rounded-xl transition-all ${activeTab === 'manual' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                                    }`}
                             >
                                 Input Manual
                             </button>
                             <button
                                 type="button"
                                 onClick={() => { setActiveTab('qr'); setErrorMsg(''); }}
-                                className={`py-2 px-3 text-xs font-bold rounded-xl transition-all ${
-                                    activeTab === 'qr' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'
-                                }`}
+                                className={`py-2 px-3 text-xs font-bold rounded-xl transition-all ${activeTab === 'qr' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                                    }`}
                             >
                                 Scan Kamera QR
                             </button>
@@ -185,9 +180,9 @@ export default function Absen({ anggota }) {
                             </form>
                         ) : (
                             <div className="py-2">
-                                <QRScanner 
-                                    onScanSuccess={handleQrScanSuccess} 
-                                    onScanError={handleQrScanError} 
+                                <QRScanner
+                                    onScanSuccess={handleQrScanSuccess}
+                                    onScanError={handleQrScanError}
                                 />
                             </div>
                         )}
@@ -212,9 +207,9 @@ export default function Absen({ anggota }) {
                         )}
 
                         <div>
-                            <SignatureCanvas 
-                                label="Bubuhkan Tanda Tangan" 
-                                onChange={setSignature} 
+                            <SignatureCanvas
+                                label="Bubuhkan Tanda Tangan"
+                                onChange={setSignature}
                             />
                         </div>
 

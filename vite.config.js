@@ -10,4 +10,10 @@ export default defineConfig({
         }),
         react(),
     ],
+    server: {
+        hmr: {
+            host: 'localhost',
+        },
+        allowedHosts: ['.ngrok-free.app', 'localhost', '127.0.0.1'],
+    },
 });

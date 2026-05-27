@@ -4,12 +4,14 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import Modal from '@/Components/Modal';
 import InputLabel from '@/Components/InputLabel';
 import InputError from '@/Components/InputError';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 
 export default function Index({ kegiatan, filters }) {
     const [search, setSearch] = useState(filters.search || '');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedKegiatan, setSelectedKegiatan] = useState(null);
+    const [confirmState, setConfirmState] = useState({ show: false, item: null });
 
     const { data, setData, post, put, delete: destroy, processing, errors, reset, clearErrors } = useForm({
         nama_kegiatan: '',
@@ -80,9 +82,13 @@ export default function Index({ kegiatan, filters }) {
     };
 
     const handleDelete = (item) => {
-        if (confirm(`Apakah Anda yakin ingin menghapus kegiatan ${item.nama_kegiatan}? Seluruh catatan kehadiran untuk kegiatan ini juga akan dihapus.`)) {
-            destroy(route('admin.kegiatan.destroy', item.id));
-        }
+        setConfirmState({ show: true, item });
+    };
+
+    const confirmDelete = () => {
+        destroy(route('admin.kegiatan.destroy', confirmState.item.id), {
+            onFinish: () => setConfirmState({ show: false, item: null })
+        });
     };
 
     const handleToggleStatus = (item) => {
@@ -138,12 +144,12 @@ export default function Index({ kegiatan, filters }) {
                 {/* Add Event Button */}
                 <button
                     onClick={openCreateModal}
-                    className="py-2.5 px-5 bg-primary hover:bg-opacity-90 text-white rounded-xl text-sm font-semibold transition-all shadow-md shadow-primary/10 flex items-center justify-center space-x-2"
+                    className="py-2.5 px-4 bg-primary hover:bg-opacity-90 text-white rounded-xl text-sm font-semibold transition-all flex items-center justify-center space-x-2"
                 >
-                    <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                     </svg>
-                    <span>Buat Kegiatan Baru</span>
+                    <span>Tambah Kegiatan</span>
                 </button>
             </div>
 
@@ -454,6 +460,14 @@ export default function Index({ kegiatan, filters }) {
                     </div>
                 </form>
             </Modal>
+
+            <ConfirmDialog
+                show={confirmState.show}
+                title="Hapus Kegiatan"
+                message={`Apakah Anda yakin ingin menghapus kegiatan ${confirmState.item?.nama_kegiatan}? Seluruh catatan kehadiran untuk kegiatan ini juga akan dihapus.`}
+                onConfirm={confirmDelete}
+                onCancel={() => setConfirmState({ show: false, item: null })}
+            />
         </AdminLayout>
     );
 }
