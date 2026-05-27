@@ -35,7 +35,7 @@ export default function UserLayout({ children, title }) {
                     <div className="flex items-center space-x-3">
                         <img src="/images/logo-rohis.png" alt="Logo ROHIS" className="w-8 h-8 object-contain rounded-lg" />
                         <Link href={route('dashboard')} className="font-bold text-base tracking-wider hover:text-primary transition-colors">
-                            ROHIS 7
+                            ROHIS SMK TI Bali Global Badung
                         </Link>
                     </div>
 

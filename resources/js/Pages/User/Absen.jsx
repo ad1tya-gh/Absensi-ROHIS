@@ -12,6 +12,9 @@ export default function Absen({ anggota }) {
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
 
+    // 🚀 INI YANG KURANG KEMARIN: Menambahkan state untuk kontrol kamera QR Scanner
+    const [isScanning, setIsScanning] = useState(false);
+
     // Validated activity info
     const [kegiatan, setKegiatan] = useState(null);
 
@@ -155,6 +158,7 @@ export default function Absen({ anggota }) {
                         </div>
 
                         {/* Tab Content */}
+                        {/* Tab Content */}
                         {activeTab === 'manual' ? (
                             <form onSubmit={(e) => { e.preventDefault(); handleValidateCode(); }} className="space-y-4">
                                 <div>
@@ -179,9 +183,15 @@ export default function Absen({ anggota }) {
                                 </button>
                             </form>
                         ) : (
-                            <div className="py-2">
+                            <div className="flex flex-col items-center gap-4 py-2">
+                                {/* Menggunakan activeTab === 'qr' untuk menyalakan/mematikan kamera otomatis */}
                                 <QRScanner
-                                    onScanSuccess={handleQrScanSuccess}
+                                    isActive={activeTab === 'qr'}
+                                    onScanSuccess={(data) => {
+                                        // Saat sukses scan, kembalikan tab ke manual agar kamera otomatis mati
+                                        setActiveTab('manual');
+                                        handleQrScanSuccess(data);
+                                    }}
                                     onScanError={handleQrScanError}
                                 />
                             </div>

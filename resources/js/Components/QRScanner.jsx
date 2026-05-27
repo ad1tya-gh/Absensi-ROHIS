@@ -1,103 +1,112 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Html5Qrcode } from 'html5-qrcode';
+import QrScanner from 'qr-scanner';
 
 export default function QRScanner({ onScanSuccess, onScanError, isActive }) {
     const [cameras, setCameras] = useState([]);
     const [selectedCameraId, setSelectedCameraId] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
     const [scannerActive, setScannerActive] = useState(false);
-    
-    const html5QrCodeRef = useRef(null);
-    const scannerId = 'qr-reader-container-view';
 
-    // 1. Dapatkan daftar kamera setelah komponen termuat
+    const videoRef = useRef(null);
+    const qrScannerRef = useRef(null);
+
+    // 1. Ambil daftar kamera sekali saja saat komponen dimuat
     useEffect(() => {
-        Html5Qrcode.getCameras().then(devices => {
+        QrScanner.listCameras(true).then(devices => {
             if (devices && devices.length > 0) {
                 setCameras(devices);
-                // Pilih kamera belakang secara default jika tersedia
-                const backCamera = devices.find(device => 
-                    device.label.toLowerCase().includes('back') || 
-                    device.label.toLowerCase().includes('rear')
+                // Cari kamera belakang secara default
+                const backCamera = devices.find(device =>
+                    device.label.toLowerCase().includes('back') ||
+                    device.label.toLowerCase().includes('rear') ||
+                    device.label.toLowerCase().includes('lingkungan')
                 );
                 setSelectedCameraId(backCamera ? backCamera.id : devices[0].id);
             } else {
-                setErrorMsg('Tidak ada kamera terdeteksi. Silakan berikan izin akses kamera.');
+                setErrorMsg('Tidak ada kamera terdeteksi.');
             }
         }).catch(err => {
-            setErrorMsg('Gagal mengakses kamera: ' + err.message);
-            if (onScanError) onScanError(err);
+            setErrorMsg('Gagal memuat daftar kamera: ' + err.message);
         });
 
-        // Cleanup: pastikan kamera dimatikan saat pindah halaman / tab
+        // Cleanup total saat komponen dibongkar (unmount)
         return () => {
-            if (html5QrCodeRef.current) {
-                const scanner = html5QrCodeRef.current;
-                if (scanner.isScanning) {
-                    scanner.stop().catch(e => console.error(e));
-                }
+            if (qrScannerRef.current) {
+                qrScannerRef.current.destroy();
+                qrScannerRef.current = null;
             }
         };
     }, []);
 
-    // 2. Auto-start scanner saat selectedCameraId terpilih/berubah DAN scanner aktif
+    // 2. Kontrol jalannya scanner berdasarkan status aktif dan kamera yang dipilih
     useEffect(() => {
-        if (isActive && selectedCameraId) {
-            startScanner(selectedCameraId);
+        if (isActive && selectedCameraId && videoRef.current) {
+            // Berikan jeda sedikit agar DOM video benar-benar siap
+            const timer = setTimeout(() => {
+                startScanner(selectedCameraId);
+            }, 300);
+
+            return () => clearTimeout(timer);
         } else {
             stopScanner();
         }
     }, [selectedCameraId, isActive]);
 
-    const stopScanner = async () => {
-        if (html5QrCodeRef.current) {
-            if (html5QrCodeRef.current.isScanning) {
-                try {
-                    await html5QrCodeRef.current.stop();
-                } catch (err) {
-                    console.error("Gagal menghentikan scanner:", err);
-                }
+    const stopScanner = () => {
+        if (qrScannerRef.current) {
+            try {
+                qrScannerRef.current.stop();
+                qrScannerRef.current.destroy();
+            } catch (err) {
+                console.log("Scanner sudah dibersihkan.");
             }
-            html5QrCodeRef.current = null;
-            setScannerActive(false);
+            qrScannerRef.current = null;
         }
+        setScannerActive(false);
     };
 
-    const startScanner = async (cameraId) => {
+    const startScanner = (cameraId) => {
         setErrorMsg('');
-        setScannerActive(false);
 
-        // Hentikan scanner aktif terlebih dahulu jika ada
-        await stopScanner();
-
-        // Buat instance baru
-        const html5QrCode = new Html5Qrcode(scannerId);
-        html5QrCodeRef.current = html5QrCode;
-
-        try {
-            await html5QrCode.start(
-                cameraId,
-                {
-                    fps: 10,
-                    qrbox: { width: 200, height: 200 }
-                },
-                (decodedText) => {
-                    // Berhasil scan!
-                    stopScanner().then(() => {
-                        onScanSuccess(decodedText);
-                    }).catch(() => {
-                        onScanSuccess(decodedText);
-                    });
-                },
-                (errorMessage) => {
-                    // Frame scan biasa (abaikan agar tidak spam)
-                }
-            );
-            setScannerActive(true);
-        } catch (err) {
-            setErrorMsg('Kamera gagal diaktifkan. Pastikan izin akses kamera diaktifkan: ' + err.message);
-            setScannerActive(false);
+        // Bersihkan objek lama jika ada tanpa memicu re-render state
+        if (qrScannerRef.current) {
+            try { qrScannerRef.current.destroy(); } catch (e) { }
         }
+
+        if (!videoRef.current) return;
+
+        // Inisialisasi QrScanner baru secara langsung dan aman
+        const qrScanner = new QrScanner(
+            videoRef.current,
+            (result) => {
+                // Berhasil scan! Matikan scanner dulu baru jalankan fungsi sukses
+                if (qrScannerRef.current) {
+                    qrScannerRef.current.stop();
+                }
+                if (onScanSuccess) {
+                    onScanSuccess(result.data);
+                }
+            },
+            {
+                onDecodeError: () => { /* Abaikan logs mencari frame QR */ },
+                preferredCamera: cameraId,
+                highlightScanRegion: true,
+                maxScansPerSecond: 6,
+            }
+        );
+
+        qrScannerRef.current = qrScanner;
+
+        // Jalankan dan set status aktif hanya jika berhasil resolve
+        qrScanner.start()
+            .then(() => {
+                setScannerActive(true);
+            })
+            .catch(err => {
+                console.error(err);
+                setErrorMsg('Kamera gagal diaktifkan. Berikan izin akses kamera dan pastikan menggunakan HTTPS.');
+                setScannerActive(false);
+            });
     };
 
     return (
@@ -108,14 +117,19 @@ export default function QRScanner({ onScanSuccess, onScanError, isActive }) {
                 </div>
             )}
 
-            {/* Container scanner. ID ini harus stabil & tidak boleh di-remove dari DOM agar library html5-qrcode tidak rusak */}
-            <div 
-                id={scannerId} 
-                className="w-full aspect-square max-w-[260px] bg-slate-900 rounded-2xl overflow-hidden shadow-inner mb-4 relative"
-            >
-                {!scannerActive && !errorMsg && (
+            <div className="w-full aspect-square max-w-[260px] bg-slate-900 rounded-2xl overflow-hidden shadow-inner mb-4 relative">
+                {/* Tag video dipaksa playsInline agar tidak membuka full-screen di iOS */}
+                <video
+                    ref={videoRef}
+                    playsInline
+                    muted
+                    className="w-full h-full object-cover"
+                />
+
+                {/* Overlay Loading hanya muncul jika scanner belum ready beneran */}
+                {!scannerActive && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400 p-4 text-center z-10 bg-slate-900">
-                        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-3"></div>
+                        <div className="w-10 h-10 border-4 border-t-transparent border-emerald-500 rounded-full animate-spin mb-3"></div>
                         <p className="text-xs">Mengaktifkan kamera...</p>
                     </div>
                 )}
@@ -127,7 +141,7 @@ export default function QRScanner({ onScanSuccess, onScanError, isActive }) {
                     <select
                         value={selectedCameraId}
                         onChange={(e) => setSelectedCameraId(e.target.value)}
-                        className="w-full text-xs rounded-xl border-gray-200 focus:border-primary focus:ring-primary shadow-sm py-2"
+                        className="w-full text-xs rounded-xl border-gray-200 shadow-sm py-2"
                     >
                         {cameras.map(camera => (
                             <option key={camera.id} value={camera.id}>

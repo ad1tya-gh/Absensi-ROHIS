@@ -20,7 +20,7 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
-        "html5-qrcode": "^2.3.8",
+        "qr-scanner": "^1.4.2",
         "react-signature-canvas": "^1.1.0-alpha.2"
     }
 }

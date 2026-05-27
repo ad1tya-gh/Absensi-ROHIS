@@ -24,7 +24,7 @@ export default function Dashboard({ anggota, riwayat }) {
                     
                     <div className="relative z-10 space-y-2">
                         <span className="text-xs uppercase font-bold tracking-widest text-primary-content/75 bg-white/10 px-3 py-1 rounded-full border border-white/5">
-                            Anggota ROHIS 7
+                            Anggota ROHIS SMK TI Bali Global Badung
                         </span>
                         <h1 className="text-2xl md:text-3xl font-extrabold">Selamat Datang, {anggota?.nama}!</h1>
                         <p className="text-sm text-gray-200">Semoga harimu penuh berkah. Jangan lupa untuk mengisi absensi setiap kali mengikuti kegiatan.</p>

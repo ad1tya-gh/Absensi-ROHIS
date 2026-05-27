@@ -37,7 +37,7 @@ export default function Login({ status }) {
                     <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center mb-4">
                         <img src="/images/logo-rohis.png" alt="Logo ROHIS" className="w-full h-full object-contain" />
                     </div>
-                    <h2 className="text-2xl font-bold text-white tracking-wide">ABSENSI ROHIS 7</h2>
+                    <h2 className="text-2xl font-bold text-white tracking-wide">ABSENSI ROHIS</h2>
                     <p className="text-sm text-gray-400 mt-1">SMK TI Bali Global Badung</p>
                 </div>
 

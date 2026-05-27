@@ -95,8 +95,8 @@
 <body>
 
     <div class="header">
-        <h2>Daftar Hadir ROHIS 7</h2>
-        <p>SMA Negeri 7</p>
+        <h2>Daftar Hadir ROHIS SMK TI</h2>
+        <p>SMK TI Bali GLobal Badung</p>
     </div>
 
     <table class="info-table">
@@ -154,7 +154,7 @@
     </table>
 
     <div class="footer">
-        Dicetak otomatis oleh Sistem Absensi ROHIS 7 pada {{ \Carbon\Carbon::now()->format('d-m-Y H:i') }} WIB
+        Dicetak otomatis oleh Sistem Absensi ROHIS SMK TI Bali Global Badung pada {{ \Carbon\Carbon::now()->format('d-m-Y H:i') }} WIB
     </div>
 
 </body>

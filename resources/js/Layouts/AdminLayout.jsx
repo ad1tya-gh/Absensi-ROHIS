@@ -84,7 +84,7 @@ export default function AdminLayout({ children, title }) {
                 <div className="h-16 flex items-center px-6 bg-slate-950/20 border-b border-white/5">
                     <div className="flex items-center space-x-2">
                         <img src="/images/logo-rohis.png" alt="Logo ROHIS" className="w-8 h-8 object-contain rounded-lg" />
-                        <span className="font-bold text-lg tracking-wider bg-gradient-to-r from-white via-white to-primary/80 bg-clip-text text-transparent">ROHIS 7 Admin</span>
+                        <span className="font-bold text-lg tracking-wider bg-gradient-to-r from-white via-white to-primary/80 bg-clip-text text-transparent">Admin ROHIS 7</span>
                     </div>
                 </div>
 
@@ -97,8 +97,8 @@ export default function AdminLayout({ children, title }) {
                                 key={item.name}
                                 href={item.href}
                                 className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${active
-                                        ? 'bg-primary text-white font-semibold shadow-lg shadow-primary/20'
-                                        : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                                    ? 'bg-primary text-white font-semibold shadow-lg shadow-primary/20'
+                                    : 'text-gray-300 hover:bg-white/5 hover:text-white'
                                     }`}
                             >
                                 {item.icon}
@@ -139,7 +139,7 @@ export default function AdminLayout({ children, title }) {
                         <div className="h-16 flex items-center justify-between px-6 bg-slate-950/20 border-b border-white/5">
                             <div className="flex items-center space-x-2">
                                 <img src="/images/logo-rohis.png" alt="Logo ROHIS" className="w-8 h-8 object-contain rounded-lg" />
-                                <span className="font-bold text-lg">ROHIS 7 Admin</span>
+                                <span className="font-bold text-lg">ROHIS SMK TI Admin</span>
                             </div>
                             <button onClick={() => setSidebarOpen(false)} className="text-gray-400 hover:text-white">
                                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -207,7 +207,7 @@ export default function AdminLayout({ children, title }) {
                     {/* Organization Banner */}
                     <div className="flex items-center space-x-3">
                         <span className="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
-                            ROHIS SMK TI Bali Global Badung
+                            SMK TI Bali GLobal Badung
                         </span>
                     </div>
                 </header>
