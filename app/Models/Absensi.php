@@ -21,7 +21,7 @@ class Absensi extends Model
      */
     protected $fillable = [
         'kegiatan_id',
-        'nisn',
+        'nis',
         'waktu_absen',
         'tanda_tangan',
     ];
@@ -44,10 +44,10 @@ class Absensi extends Model
     }
 
     /**
-     * Relasi ke anggota (melalui nisn).
+     * Relasi ke anggota (melalui nis).
      */
     public function anggota()
     {
-        return $this->belongsTo(Anggota::class, 'nisn', 'nisn');
+        return $this->belongsTo(Anggota::class, 'nis', 'nis');
     }
 }

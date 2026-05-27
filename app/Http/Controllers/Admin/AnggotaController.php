@@ -22,7 +22,7 @@ class AnggotaController extends Controller
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
-                $q->where('nisn', 'like', "%{$search}%")
+                $q->where('nis', 'like', "%{$search}%")
                   ->orWhere('nama', 'like', "%{$search}%")
                   ->orWhere('kelas', 'like', "%{$search}%")
                   ->orWhere('jabatan', 'like', "%{$search}%");
@@ -45,7 +45,7 @@ class AnggotaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nisn' => 'required|string|max:20|unique:anggota,nisn',
+            'nis' => 'required|string|max:20|unique:anggota,nis',
             'nama' => 'required|string|max:100',
             'kelas' => 'required|string|max:20',
             'jabatan' => 'required|string|max:50',
@@ -81,7 +81,7 @@ class AnggotaController extends Controller
 
             // Create anggota
             Anggota::create([
-                'nisn' => $validated['nisn'],
+                'nis' => $validated['nis'],
                 'nama' => $validated['nama'],
                 'kelas' => $validated['kelas'],
                 'jabatan' => $validated['jabatan'],
@@ -96,12 +96,12 @@ class AnggotaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $nisn)
+    public function update(Request $request, $nis)
     {
-        $anggota = Anggota::findOrFail($nisn);
+        $anggota = Anggota::findOrFail($nis);
         
         $validated = $request->validate([
-            'nisn' => 'required|string|max:20|unique:anggota,nisn,' . $nisn . ',nisn',
+            'nis' => 'required|string|max:20|unique:anggota,nis,' . $nis . ',nis',
             'nama' => 'required|string|max:100',
             'kelas' => 'required|string|max:20',
             'jabatan' => 'required|string|max:50',
@@ -109,7 +109,7 @@ class AnggotaController extends Controller
 
         DB::transaction(function () use ($anggota, $validated) {
             $anggota->update([
-                'nisn' => $validated['nisn'],
+                'nis' => $validated['nis'],
                 'nama' => $validated['nama'],
                 'kelas' => $validated['kelas'],
                 'jabatan' => $validated['jabatan'],
@@ -128,9 +128,9 @@ class AnggotaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($nisn)
+    public function destroy($nis)
     {
-        $anggota = Anggota::findOrFail($nisn);
+        $anggota = Anggota::findOrFail($nis);
 
         DB::transaction(function () use ($anggota) {
             $user = $anggota->user;

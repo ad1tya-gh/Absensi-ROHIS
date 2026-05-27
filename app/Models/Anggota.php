@@ -15,9 +15,9 @@ class Anggota extends Model
     protected $table = 'anggota';
 
     /**
-     * Primary key adalah NISN (string), bukan auto-increment.
+     * Primary key adalah NIS (string), bukan auto-increment.
      */
-    protected $primaryKey = 'nisn';
+    protected $primaryKey = 'nis';
     public $incrementing  = false;
     protected $keyType    = 'string';
 
@@ -27,7 +27,7 @@ class Anggota extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'nisn',
+        'nis',
         'nama',
         'kelas',
         'jabatan',
@@ -48,6 +48,6 @@ class Anggota extends Model
      */
     public function absensis()
     {
-        return $this->hasMany(Absensi::class, 'nisn', 'nisn');
+        return $this->hasMany(Absensi::class, 'nis', 'nis');
     }
 }

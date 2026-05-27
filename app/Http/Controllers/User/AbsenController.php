@@ -31,7 +31,7 @@ class AbsenController extends Controller
         $riwayat = [];
         if ($anggota) {
             $riwayat = Absensi::with('kegiatan')
-                ->where('nisn', $anggota->nisn)
+                ->where('nis', $anggota->nis)
                 ->orderBy('waktu_absen', 'desc')
                 ->get();
         }
@@ -92,9 +92,8 @@ class AbsenController extends Controller
             return response()->json(['valid' => false, 'message' => 'Kegiatan ini sudah tidak aktif / selesai.'], 200);
         }
 
-        // Check duplicate attendance
         $sudahAbsen = Absensi::where('kegiatan_id', $kegiatan->id)
-            ->where('nisn', $anggota->nisn)
+            ->where('nis', $anggota->nis)
             ->exists();
 
         if ($sudahAbsen) {
@@ -141,7 +140,7 @@ class AbsenController extends Controller
         // Double check duplicate attendance in transaction
         return DB::transaction(function () use ($kegiatan, $anggota, $request) {
             $sudahAbsen = Absensi::where('kegiatan_id', $kegiatan->id)
-                ->where('nisn', $anggota->nisn)
+                ->where('nis', $anggota->nis)
                 ->exists();
 
             if ($sudahAbsen) {
@@ -151,7 +150,7 @@ class AbsenController extends Controller
             // Create attendance entry
             $absensi = Absensi::create([
                 'kegiatan_id' => $kegiatan->id,
-                'nisn' => $anggota->nisn,
+                'nis' => $anggota->nis,
                 'waktu_absen' => now(),
                 'tanda_tangan' => $request->input('tanda_tangan'),
             ]);

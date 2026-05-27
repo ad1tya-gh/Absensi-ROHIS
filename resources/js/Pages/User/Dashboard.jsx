@@ -44,8 +44,8 @@ export default function Dashboard({ anggota, riwayat }) {
                                     <span className="text-sm font-bold text-slate-700">{anggota?.nama}</span>
                                 </div>
                                 <div>
-                                    <span className="block text-[10px] uppercase font-bold tracking-widest text-slate-400">NISN</span>
-                                    <span className="text-sm font-mono text-slate-600">{anggota?.nisn}</span>
+                                    <span className="block text-[10px] uppercase font-bold tracking-widest text-slate-400">NIS</span>
+                                    <span className="text-sm font-mono text-slate-600">{anggota?.nis}</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>

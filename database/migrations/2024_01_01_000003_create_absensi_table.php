@@ -16,14 +16,14 @@ return new class extends Migration
         Schema::create('absensi', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kegiatan_id')->constrained('kegiatan')->cascadeOnDelete();
-            $table->string('nisn', 20);
-            $table->foreign('nisn')->references('nisn')->on('anggota')->cascadeOnDelete();
+            $table->string('nis', 20);
+            $table->foreign('nis')->references('nis')->on('anggota')->cascadeOnDelete();
             $table->timestamp('waktu_absen');
             $table->text('tanda_tangan'); // Base64 data URL
             $table->timestamps();
 
             // Constraint: satu anggota hanya bisa absen sekali per kegiatan
-            $table->unique(['kegiatan_id', 'nisn']);
+            $table->unique(['kegiatan_id', 'nis']);
         });
     }
 

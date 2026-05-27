@@ -15,7 +15,7 @@ export default function Index({ anggota, filters, jabatanList }) {
     const [confirmState, setConfirmState] = useState({ show: false, item: null });
 
     const { data, setData, post, put, delete: destroy, processing, errors, reset, clearErrors } = useForm({
-        nisn: '',
+        nis: '',
         nama: '',
         kelas: '',
         jabatan: '',
@@ -46,7 +46,7 @@ export default function Index({ anggota, filters, jabatanList }) {
         clearErrors();
         setSelectedAnggota(item);
         setData({
-            nisn: item.nisn,
+            nis: item.nis,
             nama: item.nama,
             kelas: item.kelas,
             jabatan: item.jabatan
@@ -71,7 +71,7 @@ export default function Index({ anggota, filters, jabatanList }) {
 
     const handleEditSubmit = (e) => {
         e.preventDefault();
-        put(route('admin.anggota.update', selectedAnggota.nisn), {
+        put(route('admin.anggota.update', selectedAnggota.nis), {
             onSuccess: () => {
                 closeEditModal();
                 reset();
@@ -84,7 +84,7 @@ export default function Index({ anggota, filters, jabatanList }) {
     };
 
     const confirmDelete = () => {
-        destroy(route('admin.anggota.destroy', confirmState.item.nisn), {
+        destroy(route('admin.anggota.destroy', confirmState.item.nis), {
             onFinish: () => setConfirmState({ show: false, item: null })
         });
     };
@@ -105,7 +105,7 @@ export default function Index({ anggota, filters, jabatanList }) {
                         </span>
                         <input
                             type="text"
-                            placeholder="Cari NISN, nama, kelas, atau jabatan..."
+                            placeholder="Cari NIS, nama, kelas, atau jabatan..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="pl-11 pr-8 block w-full rounded-xl border-slate-200 focus:border-primary focus:ring-primary shadow-sm text-sm py-2.5"
@@ -149,7 +149,7 @@ export default function Index({ anggota, filters, jabatanList }) {
                         <thead>
                             <tr className="border-b border-slate-100 bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
                                 <th className="py-4 px-6 text-center w-12">No</th>
-                                <th className="py-4 px-6">NISN</th>
+                                <th className="py-4 px-6">NIS</th>
                                 <th className="py-4 px-6">Nama Lengkap</th>
                                 <th className="py-4 px-6">Kelas</th>
                                 <th className="py-4 px-6">Jabatan</th>
@@ -159,12 +159,12 @@ export default function Index({ anggota, filters, jabatanList }) {
                         <tbody className="divide-y divide-slate-100">
                             {anggota.data.length > 0 ? (
                                 anggota.data.map((item, index) => (
-                                    <tr key={item.nisn} className="hover:bg-slate-50/50 transition-colors">
+                                    <tr key={item.nis} className="hover:bg-slate-50/50 transition-colors">
                                         <td className="py-4 px-6 text-center text-slate-400 font-medium">
                                             {anggota.from + index}
                                         </td>
                                         <td className="py-4 px-6 font-mono text-xs text-slate-500">
-                                            {item.nisn}
+                                            {item.nis}
                                         </td>
                                         <td className="py-4 px-6 font-bold text-slate-800">
                                             {item.nama}
@@ -257,17 +257,17 @@ export default function Index({ anggota, filters, jabatanList }) {
                     <div className="mt-5 space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <InputLabel htmlFor="create-nisn" value="NISN Anggota" className="font-semibold" />
+                                <InputLabel htmlFor="create-nis" value="NIS Anggota" className="font-semibold" />
                                 <input
-                                    id="create-nisn"
+                                    id="create-nis"
                                     type="text"
-                                    value={data.nisn}
-                                    onChange={(e) => setData('nisn', e.target.value)}
+                                    value={data.nis}
+                                    onChange={(e) => setData('nis', e.target.value)}
                                     className="mt-1 block w-full rounded-xl border-slate-200 focus:border-primary focus:ring-primary shadow-sm text-sm"
                                     required
                                     maxLength={20}
                                 />
-                                <InputError message={errors.nisn} className="mt-1 text-xs" />
+                                <InputError message={errors.nis} className="mt-1 text-xs" />
                             </div>
                             <div>
                                 <InputLabel htmlFor="create-nama" value="Nama Lengkap" className="font-semibold" />
@@ -362,17 +362,17 @@ export default function Index({ anggota, filters, jabatanList }) {
                     <div className="mt-5 space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <InputLabel htmlFor="edit-nisn" value="NISN Anggota" className="font-semibold" />
+                                <InputLabel htmlFor="edit-nis" value="NIS Anggota" className="font-semibold" />
                                 <input
-                                    id="edit-nisn"
+                                    id="edit-nis"
                                     type="text"
-                                    value={data.nisn}
-                                    onChange={(e) => setData('nisn', e.target.value)}
+                                    value={data.nis}
+                                    onChange={(e) => setData('nis', e.target.value)}
                                     className="mt-1 block w-full rounded-xl border-slate-200 bg-slate-50 focus:border-primary focus:ring-primary shadow-sm text-sm cursor-not-allowed"
                                     required
                                     disabled
                                 />
-                                <InputError message={errors.nisn} className="mt-1 text-xs" />
+                                <InputError message={errors.nis} className="mt-1 text-xs" />
                             </div>
                             <div>
                                 <InputLabel htmlFor="edit-nama" value="Nama Lengkap" className="font-semibold" />

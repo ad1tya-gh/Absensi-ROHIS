@@ -118,7 +118,7 @@
         <thead>
             <tr>
                 <th class="center" style="width: 5%;">No</th>
-                <th style="width: 15%;">NISN</th>
+                <th style="width: 15%;">NIS</th>
                 <th style="width: 25%;">Nama Lengkap</th>
                 <th style="width: 12%;">Kelas</th>
                 <th style="width: 15%;">Jabatan</th>
@@ -130,7 +130,7 @@
             @forelse($absensi as $index => $item)
                 <tr>
                     <td class="center">{{ $index + 1 }}</td>
-                    <td>{{ $item->nisn }}</td>
+                    <td>{{ $item->nis }}</td>
                     <td><strong>{{ $item->anggota->nama }}</strong></td>
                     <td>{{ $item->anggota->kelas }}</td>
                     <td>{{ $item->anggota->jabatan }}</td>

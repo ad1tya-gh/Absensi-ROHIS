@@ -124,7 +124,7 @@ export default function Detail({ kegiatan, absensi, qrCodeSvg }) {
                         <thead>
                             <tr className="border-b border-slate-100 bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
                                 <th className="py-4 px-6 text-center w-12">No</th>
-                                <th className="py-4 px-6">NISN</th>
+                                <th className="py-4 px-6">NIS</th>
                                 <th className="py-4 px-6">Nama Lengkap</th>
                                 <th className="py-4 px-6">Kelas</th>
                                 <th className="py-4 px-6">Jabatan</th>
@@ -141,7 +141,7 @@ export default function Detail({ kegiatan, absensi, qrCodeSvg }) {
                                             {index + 1}
                                         </td>
                                         <td className="py-4 px-6 font-mono text-xs text-slate-500">
-                                            {item.nisn}
+                                            {item.nis}
                                         </td>
                                         <td className="py-4 px-6 font-bold text-slate-800">
                                             {item.anggota?.nama}

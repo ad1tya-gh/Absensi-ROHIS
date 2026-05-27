@@ -18,7 +18,7 @@ class AnggotaSeeder extends Seeder
     {
         $anggotaDummy = [
             [
-                'nisn'    => '1234567890',
+                'nis'     => '1234567890',
                 'nama'    => 'Ahmad Fauzi Akbar',
                 'kelas'   => 'X-IPA-1',
                 'jabatan' => 'Ketua',
@@ -26,7 +26,7 @@ class AnggotaSeeder extends Seeder
                 'email'   => 'ahmadfauzi.2024@rohis.id',
             ],
             [
-                'nisn'    => '1234567891',
+                'nis'     => '1234567891',
                 'nama'    => 'Siti Rahma Wati',
                 'kelas'   => 'XI-IPS-2',
                 'jabatan' => 'Sekretaris',
@@ -34,7 +34,7 @@ class AnggotaSeeder extends Seeder
                 'email'   => 'sitirahma.2025@rohis.id',
             ],
             [
-                'nisn'    => '1234567892',
+                'nis'     => '1234567892',
                 'nama'    => 'Budi Santoso',
                 'kelas'   => 'X-IPA-2',
                 'jabatan' => 'Anggota',
@@ -42,7 +42,7 @@ class AnggotaSeeder extends Seeder
                 'email'   => 'budisantoso.2024@rohis.id',
             ],
             [
-                'nisn'    => '1234567893',
+                'nis'     => '1234567893',
                 'nama'    => 'Dewi Lestari',
                 'kelas'   => 'XI-IPA-1',
                 'jabatan' => 'Bendahara',
@@ -50,7 +50,7 @@ class AnggotaSeeder extends Seeder
                 'email'   => 'dewilestari.2025@rohis.id',
             ],
             [
-                'nisn'    => '1234567894',
+                'nis'     => '1234567894',
                 'nama'    => 'Rizky Pratama',
                 'kelas'   => 'XII-IPS-1',
                 'jabatan' => 'Anggota',
@@ -70,9 +70,8 @@ class AnggotaSeeder extends Seeder
                 ]
             );
 
-            // Buat atau temukan data anggota
             Anggota::firstOrCreate(
-                ['nisn' => $data['nisn']],
+                ['nis' => $data['nis']],
                 [
                     'nama'         => $data['nama'],
                     'kelas'        => $data['kelas'],

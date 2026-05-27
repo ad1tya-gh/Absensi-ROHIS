@@ -73,7 +73,7 @@ export default function Dashboard({ totalAnggota, totalKegiatan, kegiatanAktif, 
                         <table className="w-full text-sm text-left">
                             <thead>
                                 <tr className="border-b border-slate-100 text-slate-400 text-xs uppercase tracking-wider">
-                                    <th className="py-3 px-4 font-semibold">NISN</th>
+                                    <th className="py-3 px-4 font-semibold">NIS</th>
                                     <th className="py-3 px-4 font-semibold">Nama Anggota</th>
                                     <th className="py-3 px-4 font-semibold">Kelas</th>
                                     <th className="py-3 px-4 font-semibold">Kegiatan</th>
@@ -84,7 +84,7 @@ export default function Dashboard({ totalAnggota, totalKegiatan, kegiatanAktif, 
                                 {recentAbsensi.length > 0 ? (
                                     recentAbsensi.map((item) => (
                                         <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                                            <td className="py-3 px-4 text-xs font-mono text-slate-500">{item.anggota?.nisn}</td>
+                                            <td className="py-3 px-4 text-xs font-mono text-slate-500">{item.anggota?.nis}</td>
                                             <td className="py-3 px-4 font-semibold text-slate-700">{item.anggota?.nama}</td>
                                             <td className="py-3 px-4 text-slate-600">{item.anggota?.kelas}</td>
                                             <td className="py-3 px-4 text-slate-600">{item.kegiatan?.nama_kegiatan}</td>

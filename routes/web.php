@@ -52,8 +52,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // CRUD Anggota
     Route::get('/anggota', [AnggotaController::class, 'index'])->name('anggota.index');
     Route::post('/anggota', [AnggotaController::class, 'store'])->name('anggota.store');
-    Route::put('/anggota/{nisn}', [AnggotaController::class, 'update'])->name('anggota.update');
-    Route::delete('/anggota/{nisn}', [AnggotaController::class, 'destroy'])->name('anggota.destroy');
+    Route::put('/anggota/{nis}', [AnggotaController::class, 'update'])->name('anggota.update');
+    Route::delete('/anggota/{nis}', [AnggotaController::class, 'destroy'])->name('anggota.destroy');
     
     // CRUD & Operations Kegiatan
     Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('kegiatan.index');
