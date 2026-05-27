@@ -78,3 +78,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('/bikin-tabel-absen-smk', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate --force');
+        return "Selamat! Semua tabel absensi berhasil dibuat di Filess.io! 🚀";
+    } catch (\Exception $e) {
+        return "Aduh eror nih: " . $e->getMessage();
+    }
+});
