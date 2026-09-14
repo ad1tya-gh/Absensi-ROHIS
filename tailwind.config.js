@@ -1,26 +1,37 @@
-const defaultTheme = require('tailwindcss/defaultTheme');
+import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
     content: [
-        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
-        './storage/framework/views/*.php',
-        './resources/views/**/*.blade.php',
-        './resources/js/**/*.jsx',
+        './index.html',
+        './src/**/*.{js,jsx,ts,tsx}',
     ],
-
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Inter', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', 'ui-sans-serif', 'system-ui'],
             },
             colors: {
                 primary: '#008298',
                 secondary: '#0f2846',
-                accent: '#F59E0B',
+            },
+            animation: {
+                'fade-in': 'fadeIn 0.2s ease-out',
+                'slide-in': 'slideIn 0.3s ease-out',
+            },
+            keyframes: {
+                fadeIn: {
+                    '0%': { opacity: '0', transform: 'translateY(-8px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
+                slideIn: {
+                    '0%': { transform: 'translateX(-100%)' },
+                    '100%': { transform: 'translateX(0)' },
+                },
             },
         },
     },
-
-    plugins: [require('@tailwindcss/forms')],
+    plugins: [
+        forms,
+    ],
 };
