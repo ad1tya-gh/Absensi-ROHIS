@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import UserLayout from '../../layouts/UserLayout';
 import { getRiwayatAbsen, getAnggotaByUserId } from '../../lib/supabaseQueries';
 
 export default function UserDashboard() {
@@ -46,9 +47,7 @@ export default function UserDashboard() {
     }
 
     return (
-        <div className="p-6 max-w-5xl mx-auto space-y-6">
-            <h1 className="text-3xl font-extrabold text-slate-800">Dashboard Anggota</h1>
-            
+        <UserLayout>
             <div className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col md:flex-row gap-6 items-center">
                 <div className="w-20 h-20 bg-gradient-to-tr from-primary to-emerald-400 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-primary/30">
                     {anggota.nama.charAt(0)}
@@ -102,6 +101,6 @@ export default function UserDashboard() {
                     </table>
                 </div>
             </div>
-        </div>
+        </UserLayout>
     );
 }

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getKegiatanById, getAbsensiByKegiatan, toggleKegiatanStatus } from '../../lib/supabaseQueries';
+import AdminLayout from '../../layouts/AdminLayout';
+import { useToast } from '../../components/Toast';
+import { getKegiatanById, getAbsensiByKegiatan, toggleKegiatanStatus, deleteAbsensi } from '../../lib/supabaseQueries';
 import { QRCodeSVG } from 'qrcode.react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -11,6 +13,7 @@ export default function KegiatanDetail() {
     const [absensi, setAbsensi] = useState([]);
     const [loading, setLoading] = useState(true);
     const pdfRef = useRef();
+    const { toast, showToast } = useToast();
 
     useEffect(() => {
         loadData();
@@ -34,8 +37,20 @@ export default function KegiatanDetail() {
         try {
             const updated = await toggleKegiatanStatus(id, kegiatan.is_active);
             setKegiatan(updated);
+            showToast(kegiatan.is_active ? 'Absensi ditutup' : 'Absensi dibuka', 'success');
         } catch (error) {
-            console.error('Error toggling status:', error);
+            showToast('Gagal mengubah status', 'error');
+        }
+    };
+
+    const handleDeleteAbsensi = async (absenId, namaAnggota) => {
+        if (!window.confirm(`Hapus absensi "${namaAnggota}"?`)) return;
+        try {
+            await deleteAbsensi(absenId);
+            showToast(`Absensi ${namaAnggota} dihapus`, 'success');
+            setAbsensi(prev => prev.filter(a => a.id !== absenId));
+        } catch (error) {
+            showToast('Gagal menghapus absensi', 'error');
         }
     };
 
@@ -57,7 +72,8 @@ export default function KegiatanDetail() {
     if (!kegiatan) return <div className="p-6 text-center text-slate-500">Kegiatan tidak ditemukan.</div>;
 
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-6">
+        <AdminLayout title="Detail Kegiatan">
+            {toast}
             <Link to="/admin/kegiatan" className="text-sm font-bold text-slate-500 hover:text-primary transition-colors flex items-center gap-2 mb-4">
                 ← Kembali ke Daftar Kegiatan
             </Link>
@@ -125,6 +141,7 @@ export default function KegiatanDetail() {
                                             <th className="px-4 py-3 font-bold">Nama</th>
                                             <th className="px-4 py-3 font-bold">Kelas</th>
                                             <th className="px-4 py-3 font-bold text-center">TTD</th>
+                                            <th className="px-4 py-3 font-bold text-center">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -148,6 +165,14 @@ export default function KegiatanDetail() {
                                                             <img src={absen.tanda_tangan} alt="TTD" className="h-8 mx-auto" />
                                                         ) : '-'}
                                                     </td>
+                                                    <td className="px-4 py-3 text-center">
+                                                        <button
+                                                            onClick={() => handleDeleteAbsensi(absen.id, absen.anggota?.nama)}
+                                                            className="text-red-500 text-xs font-bold px-2.5 py-1 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                                                        >
+                                                            Hapus
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                             ))
                                         )}
@@ -158,6 +183,6 @@ export default function KegiatanDetail() {
                     </div>
                 </div>
             </div>
-        </div>
+        </AdminLayout>
     );
 }

@@ -50,8 +50,8 @@ export async function getAnggotaByUserId(userId) {
         .from('anggota')
         .select('*')
         .eq('user_id', userId)
-        .single();
-    if (error && error.code !== 'PGRST116') throw error;
+        .maybeSingle();
+    if (error) throw error;
     return data || null;
 }
 
@@ -66,27 +66,65 @@ export async function createAnggota({ nis, nama, kelas, jabatan, angkatan }) {
     }
 
     let email = `${namePart}.${angkatan}@rohis.id`;
+    let password = 'RohisBisa2026';
 
-    // 2. Cek keunikan email (simple check via profiles table)
-    const { data: existingProfiles } = await supabase
-        .from('profiles')
-        .select('id')
-        .limit(1);
+    // 2. Buat client dengan service_role
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const serviceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+    
+    if (!serviceRoleKey) {
+        throw new Error("VITE_SUPABASE_SERVICE_ROLE_KEY belum diset di .env");
+    }
 
-    // Coba cek via auth admin (butuh service role) - fallback: coba langsung create
-    // Di sini kita pakai fungsi Supabase Edge Function atau RPC untuk create user
-    // Karena anon key tidak bisa bikin auth user, kita pakai admin-create-user RPC
-    const { data, error } = await supabase.rpc('admin_create_anggota', {
-        p_nis: nis,
-        p_nama: nama,
-        p_kelas: kelas,
-        p_jabatan: jabatan,
-        p_email: email,
-        p_password: 'RohisBisa2026',
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
+        auth: { autoRefreshToken: false, persistSession: false }
     });
 
-    if (error) throw error;
-    return data;
+    // 3. Create Auth User
+    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+        email: email,
+        password: password,
+        email_confirm: true,
+        user_metadata: { role: 'user' }
+    });
+
+    if (authError) throw authError;
+
+    // 4. Pastikan data profile terbuat (Upsert)
+    const { error: profileError } = await supabaseAdmin
+        .from('profiles')
+        .upsert({ 
+            id: authData.user.id,
+            email: email,
+            role: 'user' 
+        });
+        
+    if (profileError) {
+        await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
+        throw profileError;
+    }
+
+    // 5. Insert ke tabel anggota
+    const { data: anggotaData, error: anggotaError } = await supabaseAdmin
+        .from('anggota')
+        .insert({
+            nis: nis,
+            nama: nama,
+            kelas: kelas,
+            jabatan: jabatan,
+            user_id: authData.user.id
+        })
+        .select()
+        .single();
+
+    if (anggotaError) {
+        // Rollback auth user jika insert anggota gagal
+        await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
+        throw anggotaError;
+    }
+
+    return anggotaData;
 }
 
 export async function updateAnggota(nis, { nama, kelas, jabatan }) {
@@ -101,10 +139,38 @@ export async function updateAnggota(nis, { nama, kelas, jabatan }) {
 }
 
 export async function deleteAnggota(nis) {
-    // Gunakan RPC untuk hapus anggota + user sekaligus
-    const { data, error } = await supabase.rpc('admin_delete_anggota', { p_nis: nis });
-    if (error) throw error;
-    return data;
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const serviceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+    
+    if (!serviceRoleKey) {
+        throw new Error("VITE_SUPABASE_SERVICE_ROLE_KEY belum diset di .env");
+    }
+
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
+        auth: { autoRefreshToken: false, persistSession: false }
+    });
+
+    // 1. Dapatkan user_id dari tabel anggota
+    const { data: anggota, error: getError } = await supabase
+        .from('anggota')
+        .select('user_id')
+        .eq('nis', nis)
+        .single();
+    
+    if (getError) throw getError;
+
+    // 2. Hapus auth user (otomatis menghapus profile dan anggota karena ON DELETE CASCADE)
+    if (anggota && anggota.user_id) {
+        const { error: deleteAuthError } = await supabaseAdmin.auth.admin.deleteUser(anggota.user_id);
+        if (deleteAuthError) throw deleteAuthError;
+    } else {
+        // Fallback jika user_id tidak ada
+        const { error } = await supabase.from('anggota').delete().eq('nis', nis);
+        if (error) throw error;
+    }
+
+    return true;
 }
 
 // ─── JABATAN ─────────────────────────────────────────────────────────────────
@@ -260,7 +326,7 @@ export async function validateKodeAbsen(kode, userId) {
         .select('id')
         .eq('kegiatan_id', kegiatan.id)
         .eq('nis', anggota.nis)
-        .single();
+        .maybeSingle();
 
     if (existing) {
         return { valid: false, message: 'Anda sudah melakukan absensi untuk kegiatan ini.' };
@@ -275,17 +341,17 @@ export async function submitAbsen(kode, tandaTangan, userId) {
 
     const { kegiatan, anggota } = validation;
 
-    // Insert absensi
-    const { data, error } = await supabase
+    const waktuAbsen = new Date().toISOString();
+    
+    // Insert absensi (tanpa .select().single() untuk menghindari 406 Not Acceptable dari RLS)
+    const { error } = await supabase
         .from('absensi')
         .insert({
             kegiatan_id: kegiatan.id,
             nis: anggota.nis,
-            waktu_absen: new Date().toISOString(),
+            waktu_absen: waktuAbsen,
             tanda_tangan: tandaTangan,
-        })
-        .select()
-        .single();
+        });
 
     if (error) throw error;
 
@@ -299,7 +365,7 @@ export async function submitAbsen(kode, tandaTangan, userId) {
 
     return {
         nama_kegiatan: kegiatan.nama_kegiatan,
-        waktu_absen: new Date(data.waktu_absen).toLocaleTimeString('id-ID', {
+        waktu_absen: new Date(waktuAbsen).toLocaleTimeString('id-ID', {
             hour: '2-digit', minute: '2-digit'
         }) + ' WIB',
     };

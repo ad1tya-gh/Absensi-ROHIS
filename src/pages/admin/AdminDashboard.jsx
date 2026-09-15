@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import AdminLayout from '../../layouts/AdminLayout';
 import { getAdminDashboardStats } from '../../lib/supabaseQueries';
 
 export default function AdminDashboard() {
@@ -43,7 +44,7 @@ export default function AdminDashboard() {
     }
 
     return (
-        <div className="p-6 max-w-7xl mx-auto">
+        <AdminLayout title="Dashboard Admin">
             <h1 className="text-3xl font-extrabold text-slate-800 mb-8">Dashboard Admin</h1>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -101,6 +102,6 @@ export default function AdminDashboard() {
                     </table>
                 </div>
             </div>
-        </div>
+        </AdminLayout>
     );
 }

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getKegiatanList, createKegiatan } from '../../lib/supabaseQueries';
+import AdminLayout from '../../layouts/AdminLayout';
+import { useToast } from '../../components/Toast';
+import { getKegiatanList, createKegiatan, deleteKegiatan, toggleKegiatanStatus } from '../../lib/supabaseQueries';
 
 export default function KegiatanPage() {
     const [kegiatans, setKegiatans] = useState([]);
@@ -10,6 +12,7 @@ export default function KegiatanPage() {
     // Modal state
     const [showModal, setShowModal] = useState(false);
     const [newKegiatan, setNewKegiatan] = useState({ nama_kegiatan: '', tanggal: '', waktu_mulai: '' });
+    const { toast, showToast } = useToast();
 
     useEffect(() => {
         loadKegiatan();
@@ -31,18 +34,40 @@ export default function KegiatanPage() {
         e.preventDefault();
         try {
             await createKegiatan(newKegiatan);
+            showToast('Kegiatan berhasil dibuat!', 'success');
             setShowModal(false);
             setNewKegiatan({ nama_kegiatan: '', tanggal: '', waktu_mulai: '' });
             loadKegiatan();
         } catch (error) {
-            console.error('Error creating kegiatan:', error);
-            alert('Gagal membuat kegiatan');
+            showToast(error.message || 'Gagal membuat kegiatan', 'error');
+        }
+    };
+
+    const handleDelete = async (id, nama) => {
+        if (!window.confirm(`Hapus kegiatan "${nama}"?\n\nSemua data absensi kegiatan ini juga akan terhapus.`)) return;
+        try {
+            await deleteKegiatan(id);
+            showToast('Kegiatan berhasil dihapus', 'success');
+            loadKegiatan();
+        } catch (error) {
+            showToast(error.message || 'Gagal menghapus kegiatan', 'error');
+        }
+    };
+
+    const handleToggle = async (id, currentStatus) => {
+        try {
+            await toggleKegiatanStatus(id, currentStatus);
+            showToast(currentStatus ? 'Absensi ditutup' : 'Absensi dibuka', 'success');
+            loadKegiatan();
+        } catch (error) {
+            showToast(error.message || 'Gagal mengubah status', 'error');
         }
     };
 
     return (
-        <div className="p-6 max-w-7xl mx-auto">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <AdminLayout title="Daftar Kegiatan">
+            {toast}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h1 className="text-3xl font-extrabold text-slate-800">Daftar Kegiatan</h1>
                 <div className="w-full sm:w-auto flex gap-2">
                     <input
@@ -88,12 +113,28 @@ export default function KegiatanPage() {
                                     Kode: <span className="font-bold text-primary">{kegiatan.kode_absen}</span>
                                 </div>
                             </div>
-                            <Link 
-                                to={`/admin/kegiatan/${kegiatan.id}`}
-                                className="w-full py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-sm font-bold text-center transition-all"
-                            >
-                                Detail & Absensi
-                            </Link>
+                            <div className="flex gap-2">
+                                <Link 
+                                    to={`/admin/kegiatan/${kegiatan.id}`}
+                                    className="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-sm font-bold text-center transition-all"
+                                >
+                                    Detail & Absensi
+                                </Link>
+                                <button
+                                    onClick={() => handleToggle(kegiatan.id, kegiatan.is_active)}
+                                    className={`py-2.5 px-3 rounded-xl text-sm font-bold transition-all ${kegiatan.is_active ? 'bg-amber-100 text-amber-700 hover:bg-amber-200' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'}`}
+                                    title={kegiatan.is_active ? 'Tutup Absensi' : 'Buka Absensi'}
+                                >
+                                    {kegiatan.is_active ? '🔒' : '🔓'}
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(kegiatan.id, kegiatan.nama_kegiatan)}
+                                    className="py-2.5 px-3 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-sm font-bold transition-all"
+                                    title="Hapus Kegiatan"
+                                >
+                                    🗑️
+                                </button>
+                            </div>
                         </div>
                     ))
                 )}
@@ -140,6 +181,6 @@ export default function KegiatanPage() {
                     </div>
                 </div>
             )}
-        </div>
+        </AdminLayout>
     );
 }

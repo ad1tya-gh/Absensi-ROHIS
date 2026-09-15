@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import AdminLayout from '../../layouts/AdminLayout';
 import { getJabatanList, createJabatan, deleteJabatan } from '../../lib/supabaseQueries';
 
 export default function JabatanPage() {
@@ -48,7 +49,7 @@ export default function JabatanPage() {
     };
 
     return (
-        <div className="p-6 max-w-4xl mx-auto space-y-6">
+        <AdminLayout title="Manajemen Jabatan">
             <h1 className="text-3xl font-extrabold text-slate-800">Manajemen Jabatan</h1>
 
             <div className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100">
@@ -105,6 +106,6 @@ export default function JabatanPage() {
                     </tbody>
                 </table>
             </div>
-        </div>
+        </AdminLayout>
     );
 }

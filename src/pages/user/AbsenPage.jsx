@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import QrScanner from 'qr-scanner';
 import SignatureCanvas from 'react-signature-canvas';
 import { useAuth } from '../../context/AuthContext';
+import UserLayout from '../../layouts/UserLayout';
 import { validateKodeAbsen, submitAbsen } from '../../lib/supabaseQueries';
 
 export default function AbsenPage() {
@@ -102,7 +103,7 @@ export default function AbsenPage() {
 
         setError('');
         setLoading(true);
-        const dataURL = sigCanvas.current.getTrimmedCanvas().toDataURL('image/png');
+        const dataURL = sigCanvas.current.getCanvas().toDataURL('image/png');
 
         try {
             await submitAbsen(kode, dataURL, user.id);
@@ -115,7 +116,7 @@ export default function AbsenPage() {
     };
 
     return (
-        <div className="p-4 md:p-6 max-w-lg mx-auto">
+        <UserLayout>
             <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
                 
                 {step === 1 && (
@@ -231,6 +232,6 @@ export default function AbsenPage() {
                 )}
 
             </div>
-        </div>
+        </UserLayout>
     );
 }
